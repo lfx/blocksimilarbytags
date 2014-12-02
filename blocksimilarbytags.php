@@ -49,7 +49,7 @@ class blocksimilarbytags extends Module
     public function hookDisplayProductTab($params)
     {
 
-        $prefix = $this->getSSL();
+        $prefix = $this->getPrefix();
         $this->context->controller->addCSS($this->_path.'blocksimilarbytags.css', 'all');
 
         $lang_id = $this->context->language->id;
@@ -84,10 +84,10 @@ class blocksimilarbytags extends Module
     {
         $tags_in = '"' . implode('","', $tags) . '"';
         $sql = '
-          SELECT distinct(tt.id_product)
-          FROM ' . _DB_PREFIX_ . 'tag t
-          INNER JOIN ' . _DB_PREFIX_ . 'product_tag tt ON tt.id_tag = t.id_tag
-          WHERE t.name IN (' . $tags_in . ')  ORDER BY RAND() LIMIT 6;
+          SELECT distinct(pt.id_product)
+          FROM ' . _DB_PREFIX_ . 'tag tg
+          INNER JOIN ' . _DB_PREFIX_ . 'product_tag pt ON pt.id_tag = tg.id_tag
+          WHERE tg.name IN (' . $tags_in . ')  ORDER BY RAND() LIMIT 6;
         ';
 
         if (!$tmp = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql)) return false;
@@ -98,7 +98,7 @@ class blocksimilarbytags extends Module
         return $result;
     }
 
-    private function getSSL()
+    private function getPrefix()
     {
         if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") {
             $prefix = "https://";
