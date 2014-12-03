@@ -56,24 +56,26 @@ class blocksimilarbytags extends Module
         $product_ids = $this->getSimilarProducts($params['product']->tags[$lang_id]);
 
         $products = array();
-        foreach ($product_ids as $p_key => $product_id) {
-            $size = ImageType::getFormatedName('medium');
-            $product = new Product($product_id, true, $lang_id, $this->context->shop->id);
-            $link = new Link();
-            $product_url = $link->getProductLink($product);
+        if(is_array($product_ids)) {
+            foreach ($product_ids as $p_key => $product_id) {
+                $size = ImageType::getFormatedName('medium');
+                $product = new Product($product_id, true, $lang_id, $this->context->shop->id);
+                $link = new Link();
+                $product_url = $link->getProductLink($product);
 
-            $product_url = $product_url."?sim_from=".$org_id;
+                $product_url = $product_url . "?sim_from=" . $org_id;
 
-            $images = $product->getImages($lang_id);
-            foreach ($images as $key => $val) {
-                if ($val['cover'] === '1') {
-                    $img_id = $val['id_image'];
-                    break;
+                $images = $product->getImages($lang_id);
+                foreach ($images as $key => $val) {
+                    if ($val['cover'] === '1') {
+                        $img_id = $val['id_image'];
+                        break;
+                    }
                 }
-            }
-            $image = $link->getImageLink($product->link_rewrite, $img_id, $size);
+                $image = $link->getImageLink($product->link_rewrite, $img_id, $size);
 
-            $products[$p_key] = array('url' => $product_url, 'img' => $prefix . $image);
+                $products[$p_key] = array('url' => $product_url, 'img' => $prefix . $image);
+            }
         }
         $this->smarty->assign(array(
             'tag_products' => $products
@@ -89,7 +91,7 @@ class blocksimilarbytags extends Module
           SELECT distinct(pt.id_product)
           FROM ' . _DB_PREFIX_ . 'tag tg
           INNER JOIN ' . _DB_PREFIX_ . 'product_tag pt ON pt.id_tag = tg.id_tag
-          WHERE tg.name IN (' . $tags_in . ')  ORDER BY RAND() LIMIT 6;
+          WHERE tg.name IN (' . $tags_in . ') ORDER BY RAND() LIMIT 6;
         ';
 
         if (!$tmp = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql)) return false;
