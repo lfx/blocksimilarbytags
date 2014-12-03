@@ -51,7 +51,7 @@ class blocksimilarbytags extends Module
 
         $prefix = $this->getPrefix();
         $this->context->controller->addCSS($this->_path.'blocksimilarbytags.css', 'all');
-
+        $org_id = $params['product']->id;
         $lang_id = $this->context->language->id;
         $product_ids = $this->getSimilarProducts($params['product']->tags[$lang_id]);
 
@@ -61,6 +61,8 @@ class blocksimilarbytags extends Module
             $product = new Product($product_id, true, $lang_id, $this->context->shop->id);
             $link = new Link();
             $product_url = $link->getProductLink($product);
+
+            $product_url = $product_url."?sim_from=".$org_id;
 
             $images = $product->getImages($lang_id);
             foreach ($images as $key => $val) {
