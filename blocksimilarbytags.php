@@ -53,7 +53,7 @@ class blocksimilarbytags extends Module
         $this->context->controller->addCSS($this->_path.'blocksimilarbytags.css', 'all');
         $org_id = $params['product']->id;
         $lang_id = $this->context->language->id;
-        $product_ids = $this->getSimilarProducts($params['product']->tags[$lang_id]);
+        $product_ids = $this->getSimilarProducts($params['product']->tags[$lang_id], $org_id);
 
         $products = array();
         if(is_array($product_ids)) {
@@ -84,14 +84,14 @@ class blocksimilarbytags extends Module
         return $this->display(__FILE__, 'productsbytags.tpl');
     }
 
-    private function getSimilarProducts($tags)
+    private function getSimilarProducts($tags, $org_id)
     {
         $tags_in = '"' . implode('","', $tags) . '"';
         $sql = '
           SELECT distinct(pt.id_product)
           FROM ' . _DB_PREFIX_ . 'tag tg
           INNER JOIN ' . _DB_PREFIX_ . 'product_tag pt ON pt.id_tag = tg.id_tag
-          WHERE tg.name IN (' . $tags_in . ') ORDER BY RAND() LIMIT 6;
+          WHERE tg.name IN (' . $tags_in . ') AND pt.id_product != "'.$org_id.'" ORDER BY RAND() LIMIT 6;
         ';
 
         if (!$tmp = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql)) return false;
